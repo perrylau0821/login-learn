@@ -3,9 +3,15 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const login = async (req, res) => {
-	const { email, password } = req.body;
+	const { username, email, password } = req.body;
 	try {
-		const existingUser = await Users.findOne({ email: email });
+		if (username === "" && email === "") {
+			return res.status(400).json({ message: "No username or email" });
+		}
+
+		const existingUser = await Users.findOne(
+			email !== "" ? { email: email } : { username: username }
+		);
 		if (!existingUser)
 			return res.status(404).json({ message: "User doesn't exist" });
 
@@ -31,9 +37,13 @@ export const login = async (req, res) => {
 export const signup = async (req, res) => {
 	const { username, email, password, confirmPassword } = req.body;
 	try {
-		const existingUser = await Users.findOne({ email: email });
-		if (existingUser)
-			return res.status(400).json({ message: "User already exists" });
+		const existingEmail = await Users.findOne({ email: email });
+		if (existingEmail)
+			return res.status(400).json({ message: "Email already registered" });
+
+		const existingUsername = await Users.findOne({ username: username });
+		if (existingUsername)
+			return res.status(400).json({ message: "Username already used" });
 
 		if (password !== confirmPassword)
 			return res.status(400).json({ message: "Passwords don't match" });
