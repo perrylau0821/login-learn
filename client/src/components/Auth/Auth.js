@@ -50,12 +50,12 @@ const Auth = () => {
 
 	useEffect(() => {
 		function start() {
-			gapi.client.init({
-				clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+			gapi.auth2.init({
+				client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
 				scope: "email",
 			});
 		}
-		gapi.load("client:auth2", start);
+		gapi.load("auth2", start);
 	}, []);
 
 	return (
@@ -113,7 +113,6 @@ const Auth = () => {
 							isSignup ? null : (
 								<InputAdornment position="end">
 									<InputLabel
-										variant="body2"
 										sx={{
 											color: "#efefef",
 											transition: "color .1s",
@@ -144,7 +143,7 @@ const Auth = () => {
 								<IconButton
 									aria-label="toggle password visibility"
 									onClick={handleClickShowPassword}
-									tabIndex="-1"
+									tabIndex={-1}
 									// onMouseDown={handleMouseDownPassword}
 								>
 									{showPassword ? <Visibility /> : <VisibilityOff />}
@@ -166,7 +165,7 @@ const Auth = () => {
 									<IconButton
 										aria-label="toggle password visibility"
 										onClick={handleClickShowPassword}
-										tabIndex="-1"
+										tabIndex={-1}
 										// onMouseDown={handleMouseDownPassword}
 									>
 										{showPassword ? <Visibility /> : <VisibilityOff />}
