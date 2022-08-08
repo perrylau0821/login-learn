@@ -5,13 +5,18 @@ import Main from "./pages/Main";
 import { Routes, Route, Link } from "react-router-dom";
 
 function App() {
+
+
 	return (
-		<div className="App">
+		<div>
 			<Navbar />
-			<Routes>
-				<Route path="/" element={<Main />} />
-				<Route path="/auth" element={<Auth />} />
-			</Routes>
+			
+			<body className="main">
+				<Routes>
+					<Route path="/" element={<Main />} />
+					<Route path="/auth" element={<Auth />} />
+				</Routes>
+			</body>
 		</div>
 	);
 }

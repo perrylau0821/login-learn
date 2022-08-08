@@ -1,0 +1,5 @@
+@media screen and (display-mode: standalone){
+  .navbar{
+    height: 88px !important
+  }
+}

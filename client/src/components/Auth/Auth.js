@@ -47,7 +47,6 @@ const Auth = () => {
 		const field = loginWithEmail ? "email" : "username";
 		setInput({ ...input, [field]: "" });
 	};
-
 	useEffect(() => {
 		function start() {
 			gapi.auth2.init({
@@ -62,7 +61,7 @@ const Auth = () => {
 		<Box
 			sx={{
 				width: "100vw",
-				height: "90vh",
+				height: 'inherit',
 				display: "flex",
 				justifyContent: "center",
 				alignItems: "center",

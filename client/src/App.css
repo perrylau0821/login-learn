@@ -1,0 +1,11 @@
+.main {
+  margin-top: calc(var(--mt));
+  height: calc(var(--vh) - var(--mt))
+}
+
+@media screen and (display-mode: standalone){
+  .main{
+    margin-top: calc(var(--standaloneMt)) !important;
+    height: calc(var(--vh) - var(--standaloneMt))
+  }
+}

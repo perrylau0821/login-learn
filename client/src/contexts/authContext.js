@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
 			let authData;
 
 			if (Object.keys(formData).includes("token") === false) {
-				console.log("not google login");
 				const { data } = await api.login(formData);
 				authData = data;
 			} else {

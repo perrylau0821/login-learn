@@ -11,6 +11,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
+import './styles.css'
 
 const Navbar = () => {
 	const { logout, isLoggedIn, user, setUser, setIsSignup, isGoogleUser } =
@@ -36,10 +37,12 @@ const Navbar = () => {
 	};
 
 	return (
-		<AppBar position="sticky">
+		<AppBar className="navbar" position="fixed"  >
+			
 			<Toolbar
 				variant="dense"
 				sx={{
+					mt: 'auto',
 					display: "flex",
 					flexDirection: "row",
 					justifyContent: "space-between",
