@@ -15,6 +15,7 @@ import {
 	InputLabel,
 	Divider,
 	Icon,
+	FormHelperText,
 } from "@mui/material";
 import { VisibilityOff, Visibility, Google } from "@mui/icons-material";
 import { GoogleLogin } from "react-google-login";
@@ -23,8 +24,16 @@ import { gapi } from "gapi-script";
 import { useAuth } from "../../contexts/authContext";
 
 const Auth = () => {
-	const { login, signup, isSignup, setIsSignup, googleSuccess, googleFailure } =
-		useAuth();
+	const {
+		login,
+		signup,
+		isSignup,
+		setIsSignup,
+		googleSuccess,
+		googleFailure,
+		errorMsg,
+		setErrorMsg,
+	} = useAuth();
 	const [showPassword, setShowPassword] = useState(false);
 	const [loginWithEmail, setLoginWithEmail] = useState(true);
 	const [input, setInput] = useState({
@@ -47,6 +56,12 @@ const Auth = () => {
 		const field = loginWithEmail ? "email" : "username";
 		setInput({ ...input, [field]: "" });
 	};
+
+	const handleSetIsSignup = (bool) => (e) => {
+		setIsSignup(bool);
+		setErrorMsg({});
+	};
+
 	useEffect(() => {
 		function start() {
 			gapi.auth2.init({
@@ -61,7 +76,7 @@ const Auth = () => {
 		<Box
 			sx={{
 				width: "100vw",
-				height: 'inherit',
+				height: "inherit",
 				display: "flex",
 				justifyContent: "center",
 				alignItems: "center",
@@ -85,28 +100,37 @@ const Auth = () => {
 				</Typography>
 				{isSignup ? (
 					<TextField
+						error={errorMsg.username !== undefined}
 						label="Username"
-						helperText=""
+						helperText={errorMsg.username !== undefined}
 						variant="standard"
 						value={input.username}
 						onChange={handleInput("username")}
 					/>
 				) : null}
 
-				{/* <TextField
-					label="Email"
-					helperText=""
-					variant="standard"
-					value={input.email}
-					onChange={handleInput("email")}
-				/> */}
 				<FormControl variant="standard">
-					<InputLabel>{loginWithEmail ? "Email" : "Username"}</InputLabel>
+					<InputLabel
+						error={
+							!loginWithEmail && !isSignup
+								? errorMsg.username !== undefined
+								: errorMsg.email !== undefined
+						}
+					>
+						{!loginWithEmail && !isSignup ? "Username" : "Email"}
+					</InputLabel>
 					<Input
+						error={
+							!loginWithEmail && !isSignup
+								? errorMsg.username !== undefined
+								: errorMsg.email !== undefined
+						}
 						variant="standard"
-						value={loginWithEmail ? input.email : input.username}
+						value={!loginWithEmail && !isSignup ? input.username : input.email}
 						onChange={
-							loginWithEmail ? handleInput("email") : handleInput("username")
+							!loginWithEmail && !isSignup
+								? handleInput("username")
+								: handleInput("email")
 						}
 						endAdornment={
 							isSignup ? null : (
@@ -129,10 +153,22 @@ const Auth = () => {
 							)
 						}
 					/>
+					<FormHelperText
+						error={
+							!loginWithEmail && !isSignup
+								? errorMsg.username !== undefined
+								: errorMsg.email !== undefined
+						}
+					>
+						{!loginWithEmail && !isSignup ? errorMsg.username : errorMsg.email}
+					</FormHelperText>
 				</FormControl>
 				<FormControl variant="standard">
-					<InputLabel>Password</InputLabel>
+					<InputLabel error={errorMsg.password !== undefined}>
+						Password
+					</InputLabel>
 					<Input
+						error={errorMsg?.password !== undefined}
 						type={showPassword ? null : "password"}
 						variant="standard"
 						value={input.password}
@@ -150,11 +186,17 @@ const Auth = () => {
 							</InputAdornment>
 						}
 					/>
+					<FormHelperText error={errorMsg.password !== undefined}>
+						{errorMsg?.password}
+					</FormHelperText>
 				</FormControl>
 				{isSignup ? (
 					<FormControl variant="standard">
-						<InputLabel>Confirm Password</InputLabel>
+						<InputLabel error={errorMsg.confirmPassword !== undefined}>
+							Confirm Password
+						</InputLabel>
 						<Input
+							error={errorMsg.confirmPassword !== undefined}
 							type={showPassword ? null : "password"}
 							variant="standard"
 							value={input.confirmPassword}
@@ -172,6 +214,9 @@ const Auth = () => {
 								</InputAdornment>
 							}
 						/>
+						<FormHelperText error={errorMsg.confirmPassword !== undefined}>
+							{errorMsg?.confirmPassword}
+						</FormHelperText>
 					</FormControl>
 				) : null}
 
@@ -217,7 +262,7 @@ const Auth = () => {
 							<Link
 								component="button"
 								variant="body"
-								onClick={(e) => setIsSignup(false)}
+								onClick={handleSetIsSignup(false)}
 							>
 								Login
 							</Link>
@@ -228,7 +273,7 @@ const Auth = () => {
 							<Link
 								component="button"
 								variant="body"
-								onClick={(e) => setIsSignup(true)}
+								onClick={handleSetIsSignup(true)}
 							>
 								Sign Up
 							</Link>

@@ -12,12 +12,14 @@ export const AuthProvider = ({ children }) => {
 	const [isSignup, setIsSignup] = useState(false);
 	const navigate = useNavigate();
 	const isGoogleUser = user?.token.length > 500;
+	const [errorMsg, setErrorMsg] = useState({});
 
 	const googleSuccess = (res) => {
 		const result = res?.profileObj;
 		const token = res?.tokenId;
 		try {
-			login({ result, token });
+			googleLogin({ result, token });
+			setErrorMsg({});
 		} catch (error) {
 			console.log(error);
 		}
@@ -25,34 +27,50 @@ export const AuthProvider = ({ children }) => {
 
 	const googleFailure = (error) => {
 		console.log("Google Sign In was unsuccessful. Try Again Later");
+		setErrorMsg({});
 	};
 
-	const login = async (formData) => {
+	const googleLogin = async (formData) => {
 		try {
-			let authData;
+			localStorage.setItem("profile", JSON.stringify(formData));
+			setUser(formData);
 
-			if (Object.keys(formData).includes("token") === false) {
-				const { data } = await api.login(formData);
-				authData = data;
-			} else {
-				console.log("is google login");
-				authData = formData;
-			}
-			console.log(formData);
-
-			localStorage.setItem("profile", JSON.stringify(authData));
-			setUser(authData);
+			api.googleSignupOrLogin(formData.result);
 
 			navigate("/");
+			setErrorMsg({});
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
+	const login = async (formData) => {
+		try {
+			const { data } = await api.login(formData);
+
+			localStorage.setItem("profile", JSON.stringify(data));
+			setUser(data);
+
+			navigate("/");
+			setErrorMsg({});
+		} catch (error) {
+			let newErrorMsg;
+			for (let i = 0; i < error.response.data.length; i++) {
+				const { field, message } = error.response.data[i];
+				for (let j = 0; j < field.length; j++) {
+					newErrorMsg = { ...newErrorMsg, [field[j]]: message };
+				}
+			}
+			setErrorMsg(newErrorMsg);
+		}
+	};
+
 	const logout = () => {
 		localStorage.clear();
+		api.logout(user);
 		setUser(null);
 		navigate("/");
+		setErrorMsg({});
 	};
 
 	const signup = async (formData) => {
@@ -62,8 +80,16 @@ export const AuthProvider = ({ children }) => {
 			setUser(data);
 
 			navigate("/");
+			setErrorMsg({});
 		} catch (error) {
-			console.log(error);
+			let newErrorMsg;
+			for (let i = 0; i < error.response.data.length; i++) {
+				const { field, message } = error.response.data[i];
+				for (let j = 0; j < field.length; j++) {
+					newErrorMsg = { ...newErrorMsg, [field[j]]: message };
+				}
+			}
+			setErrorMsg(newErrorMsg);
 		}
 	};
 
@@ -79,9 +105,10 @@ export const AuthProvider = ({ children }) => {
 				isSignup: isSignup,
 				setIsSignup: setIsSignup,
 				isGoogleUser: isGoogleUser,
-
 				googleFailure: googleFailure,
 				googleSuccess: googleSuccess,
+				errorMsg: errorMsg,
+				setErrorMsg: setErrorMsg,
 			}}
 		>
 			{children}

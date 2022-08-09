@@ -19,9 +19,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // MongoDB
-mongoose.connect(process.env.MONGO_DB_URI, () => {
-	console.log("connected to mongoose database");
-});
+mongoose
+	.connect(process.env.MONGO_DB_URI, () => {
+		console.log("connected to mongoose database");
+	})
+	.catch((err) => console.log(err));
 
 // Router
 app.use("/users", userRoutes);
